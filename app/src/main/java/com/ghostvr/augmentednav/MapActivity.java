@@ -1,7 +1,9 @@
 package com.ghostvr.augmentednav;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -9,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,11 +27,12 @@ import com.here.android.mpa.routing.RouteOptions;
 import com.here.android.mpa.routing.RoutePlan;
 import com.here.android.mpa.routing.RouteResult;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity {
     private Map map = null;
     private MapFragment mapFragment = null;
     private MapRoute mapRoute = null;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE };
 
     private TextView tv_map = null;
+    private Button b_startNavigation = null;
     private EditText et_start_latitude = null;
     private EditText et_start_longitude = null;
     private EditText et_end_latitude = null;
@@ -57,9 +62,16 @@ public class MainActivity extends AppCompatActivity {
 
                     if (errorCode == RouteManager.Error.NONE && result.get(0).getRoute() != null) {
 
+                        final List<Location> locationList = new ArrayList<>();
                         List<GeoCoordinate> routeCoordinates = result.get(0).getRoute().getRouteGeometry();
                         for (GeoCoordinate coordinate : routeCoordinates) {
                             Log.d("Route Coordinate:", coordinate.getLatitude() + "\t" + coordinate.getLongitude());
+
+                            Location location = new Location("location");
+                            location.setLatitude(coordinate.getLatitude());
+                            location.setLongitude(coordinate.getLongitude());
+
+                            locationList.add(location);
                         }
                         // create a map route object and place it on the map
                         mapRoute = new MapRoute(result.get(0).getRoute());
@@ -72,9 +84,20 @@ public class MainActivity extends AppCompatActivity {
 
                         tv_map.setText(String.format("Route calculated with %d maneuvers.",
                                 result.get(0).getRoute().getManeuvers().size()));
+
+                        b_startNavigation.setVisibility(View.VISIBLE);
+                        b_startNavigation.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(MapActivity.this, NavigationActivity.class);
+                                intent.putExtra("locationList", (Serializable) locationList);
+                                startActivity(intent);
+                            }
+                        });
                     } else {
                         tv_map.setText(String.format("Route calculation failed: %s",
                                 errorCode.toString()));
+                        b_startNavigation.setVisibility(View.INVISIBLE);
                     }
                 }
 
@@ -109,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             routeOptions.setRouteType(RouteOptions.Type.FASTEST);
             routePlan.setRouteOptions(routeOptions);
 
-            // 4. Select Waypoints for your routes
+            // 4. Select Way-points for your routes
             // Start Point
             routePlan.addWaypoint(new GeoCoordinate(start_latitude, start_longitude));
 
@@ -189,10 +212,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialize() {
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
 
         tv_map = (TextView) findViewById(R.id.tv_map);
-
+        b_startNavigation = (Button) findViewById(R.id.b_startNavigation);
         et_start_latitude = (EditText) findViewById(R.id.et_start_latitude);
         et_start_longitude = (EditText) findViewById(R.id.et_start_longitude);
         et_end_latitude = (EditText) findViewById(R.id.et_end_latitude);

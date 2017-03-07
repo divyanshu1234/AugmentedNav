@@ -7,7 +7,7 @@
     android:orientation="vertical" >
 
     <android.widget.Button
-        android:id="@+id/directionsbutton"
+        android:id="@+id/b_getDirections"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get Directions"
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        tools:context=".MainActivity" />
+        tools:context=".MapActivity" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -58,6 +58,13 @@
             android:layout_weight="1"
             android:hint="End Longitude"/>
     </LinearLayout>
+
+    <android.widget.Button
+        android:id="@+id/b_startNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Navigation"
+        android:visibility="invisible"/>
 
     <fragment
         class="com.here.android.mpa.mapping.MapFragment"

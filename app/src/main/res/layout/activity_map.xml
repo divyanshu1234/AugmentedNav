@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.widget.Button
         android:id="@+id/b_getDirections"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get Directions"
-        android:onClick="getDirections" />
+        android:onClick="getDirections"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:id="@+id/tv_map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        tools:context=".MapActivity" />
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_below="@+id/b_getDirections"
+        tools:context=".MapActivity"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7"/>
+
+    <LinearLayout
+        android:id="@+id/ll_start_coordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/tv_map"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7">
         <EditText
             android:id="@+id/et_start_latitude"
             android:layout_height="wrap_content"
@@ -41,9 +49,14 @@
 
 
     <LinearLayout
+        android:id="@+id/ll_end_coordinates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_below="@+id/ll_start_coordinates"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7">
         <EditText
             android:id="@+id/et_end_latitude"
             android:layout_height="wrap_content"
@@ -64,7 +77,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Start Navigation"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:layout_below="@+id/ll_end_coordinates"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7"/>
 
     <fragment
         class="com.here.android.mpa.mapping.MapFragment"
@@ -72,4 +89,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+</RelativeLayout>

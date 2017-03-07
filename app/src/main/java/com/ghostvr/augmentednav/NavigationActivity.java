@@ -111,10 +111,8 @@ public class NavigationActivity extends AppCompatActivity implements
         tv_location_data_1.setText(location.getLatitude()
                 + "\t\t" + location.getLongitude()
                 + "\n" + nextPointText
-                + "\n" + locationList.size());
-        Log.d("Location", location.getLatitude()
-                + "\t\t" + location.getLongitude()
-                + "\nTotal Points = " + nextPointText);
+                + "\nTotal Points = " + locationList.size());
+        Log.d("Location", location.getLatitude() + "\t\t" + location.getLongitude() + "\n" + nextPointText);
     }
 
     private float calcDirection(Location uLocation) {

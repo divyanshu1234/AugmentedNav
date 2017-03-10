@@ -1,7 +1,6 @@
 package com.ghostvr.augmentednav;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
 import android.location.Location;
@@ -35,8 +34,9 @@ public class NavigationActivity extends AppCompatActivity implements
     private boolean rendererSet = false;
 
     private static List<Location> locationList;
+    private static int totalPoints = 0;
 
-    private static int index = 0;
+    private static int nextPointIndex = 0;
     private double dx, dy;
 
     private static TextView tv_location_data_1;
@@ -60,6 +60,7 @@ public class NavigationActivity extends AppCompatActivity implements
         tv_location_data_2 = (TextView) findViewById(R.id.tv_location_data_2);
 
         locationList = (ArrayList<Location>)getIntent().getSerializableExtra("locationList");
+        totalPoints = locationList.size();
 
         buildGoogleApiClient();
     }
@@ -97,38 +98,52 @@ public class NavigationActivity extends AppCompatActivity implements
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
+    private void setIndex(Location location) {
+        float minDist = location.distanceTo(locationList.get(0));
+        int minDistIndex = 0;
 
-    private static void setLocationData1(Location location) {
+        for(int i = 1; i < totalPoints; ++i){
+            if (location.distanceTo(locationList.get(i)) < minDist){
+                minDist = location.distanceTo(locationList.get(i));
+                minDistIndex = i;
+            }
+        }
+
+        if (nextPointIndex != minDistIndex || nextPointIndex != minDistIndex + 1){
+            nextPointIndex = minDistIndex;
+        }
+        if (location.distanceTo(locationList.get(nextPointIndex)) < 10){
+            ++nextPointIndex;
+        }
+    }
+
+    private static void setLocationDataText(Location location) {
         String nextPointText;
-        if (index == 6)
+        if (nextPointIndex == totalPoints)
             nextPointText = "Reached";
         else
-            nextPointText = locationList.get(index).getLatitude()
-                    + "\t\t" + locationList.get(index).getLongitude()
-                    + "\n" + location.distanceTo(locationList.get(index))
-                    + "\t\tindex = " + index;
+            nextPointText = locationList.get(nextPointIndex).getLatitude()
+                    + "\t\t" + locationList.get(nextPointIndex).getLongitude()
+                    + "\n" + location.distanceTo(locationList.get(nextPointIndex))
+                    + "\t\tnextPointIndex = " + nextPointIndex;
 
         tv_location_data_1.setText(location.getLatitude()
                 + "\t\t" + location.getLongitude()
                 + "\n" + nextPointText
-                + "\nTotal Points = " + locationList.size());
+                + "\nTotal Points = " + totalPoints);
         Log.d("Location", location.getLatitude() + "\t\t" + location.getLongitude() + "\n" + nextPointText);
     }
 
     private float calcDirection(Location uLocation) {
 
-        if (uLocation.distanceTo(locationList.get(index)) < 8)
-            ++index;
-
-        if (index == 6)
+        if (nextPointIndex == totalPoints)
             return 0f;
 
-        double nLatitude = locationList.get(index).getLatitude();
-        double nLongitude = locationList.get(index).getLongitude();
+        double nLatitude = locationList.get(nextPointIndex).getLatitude();
+        double nLongitude = locationList.get(nextPointIndex).getLongitude();
 
         dy = nLatitude - uLocation.getLatitude();
         dx = nLongitude - uLocation.getLongitude();
-
 
 
         if (dy == 0) {
@@ -156,14 +171,51 @@ public class NavigationActivity extends AppCompatActivity implements
             return (float) (Math.atan2(dx, -dy) - Math.PI);
     }
 
-    private float calcDirection2(Location uLocation) {
-        if (uLocation.distanceTo(locationList.get(index)) < 8)
-            ++index;
 
-        if (index == 6)
-            return 0f;
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        setIndex(location);
+        setLocationDataText(location);
 
-        return uLocation.bearingTo(locationList.get(index));
+        float angleInDegrees = calcDirection(location) * 180 / (float) Math.PI;
+
+        GeomagneticField geoField = new GeomagneticField(
+                (float) location.getLatitude(),
+                (float) location.getLongitude(),
+                (float) location.getAltitude(),
+                System.currentTimeMillis());
+
+        angleInDegrees += geoField.getDeclination();
+
+        tv_location_data_2.setText("dx = " + dx + "\ndy = " + dy + "\nangle = " + angleInDegrees);
+
+        glSurfaceView.setAngle(angleInDegrees);
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
+
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     @Override
@@ -200,53 +252,5 @@ public class NavigationActivity extends AppCompatActivity implements
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        setLocationData1(location);
-
-        float angleInDegrees = calcDirection(location) * 180 / (float) Math.PI;
-
-//        float angleInDegrees = calcDirection2(location);
-
-        GeomagneticField geoField = new GeomagneticField(
-                (float) location.getLatitude(),
-                (float) location.getLongitude(),
-                (float) location.getAltitude(),
-                System.currentTimeMillis());
-
-//        angleInDegrees += geoField.getDeclination();
-
-        tv_location_data_2.setText("dx = " + dx + "\ndy = " + dy + "\nangle = " + angleInDegrees);
-
-        glSurfaceView.setAngle(angleInDegrees);
-    }
-
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (mCurrentLocation == null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        }
-
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 }

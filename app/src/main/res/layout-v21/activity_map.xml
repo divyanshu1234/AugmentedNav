@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.widget.Button
+        android:id="@+id/b_getDirections"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get Directions"
+        android:onClick="getDirections"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/tv_map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/b_getDirections"
+        tools:context=".MapActivity"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7"/>
+
+    <LinearLayout
+        android:id="@+id/ll_start_coordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/tv_map"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7">
+        <EditText
+            android:id="@+id/et_start_latitude"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="Start Latitude"/>
+
+        <EditText
+            android:id="@+id/et_start_longitude"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="Start Longitude"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_end_coordinates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/ll_start_coordinates"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7">
+        <EditText
+            android:id="@+id/et_end_latitude"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="End Latitude"/>
+
+        <EditText
+            android:id="@+id/et_end_longitude"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="End Longitude"/>
+    </LinearLayout>
+
+    <android.widget.Button
+        android:id="@+id/b_startNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Navigation"
+        android:visibility="invisible"
+        android:layout_below="@+id/ll_end_coordinates"
+        android:elevation="1dp"
+        android:background="#FFFFFF"
+        android:alpha="0.7"/>
+
+    <fragment
+        class="com.here.android.mpa.mapping.MapFragment"
+        android:id="@+id/mapfragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>

@@ -49,6 +49,7 @@ public class MapActivity extends AppCompatActivity {
     private EditText et_end_latitude = null;
     private EditText et_end_longitude = null;
 
+
     private double start_latitude;
     private double start_longitude;
     private double end_latitude;
@@ -64,15 +65,24 @@ public class MapActivity extends AppCompatActivity {
 
                         final List<Location> locationList = new ArrayList<>();
                         List<GeoCoordinate> routeCoordinates = result.get(0).getRoute().getRouteGeometry();
-                        for (GeoCoordinate coordinate : routeCoordinates) {
-                            Log.d("Route Coordinate:", coordinate.getLatitude() + "\t" + coordinate.getLongitude());
 
-                            Location location = new Location("location");
-                            location.setLatitude(coordinate.getLatitude());
-                            location.setLongitude(coordinate.getLongitude());
+                        Location l1 = new Location("location");
+                        l1.setLatitude(routeCoordinates.get(0).getLatitude());
+                        l1.setLongitude(routeCoordinates.get(0).getLongitude());
+                        locationList.add(l1);
 
-                            locationList.add(location);
+                        for (int i = 1; i < routeCoordinates.size(); ++i){
+                            if (routeCoordinates.get(i).distanceTo(routeCoordinates.get(i-1)) > 10){
+                                Location location = new Location("location");
+                                location.setLatitude(routeCoordinates.get(i).getLatitude());
+                                location.setLongitude(routeCoordinates.get(i).getLongitude());
+                                locationList.add(location);
+                            }
                         }
+
+                        for (Location l : locationList)
+                            Log.d("Route coordinates", l.getLatitude() + "\t" + l.getLongitude());
+
                         // create a map route object and place it on the map
                         mapRoute = new MapRoute(result.get(0).getRoute());
                         map.addMapObject(mapRoute);

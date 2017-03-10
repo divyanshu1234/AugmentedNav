@@ -36,6 +36,7 @@ public class NavigationActivity extends AppCompatActivity implements
     private static List<Location> locationList;
     private static int totalPoints = 0;
 
+    private static int minDistIndex;
     private static int nextPointIndex = 0;
     private double dx, dy;
 
@@ -100,7 +101,7 @@ public class NavigationActivity extends AppCompatActivity implements
 
     private void setIndex(Location location) {
         float minDist = location.distanceTo(locationList.get(0));
-        int minDistIndex = 0;
+        minDistIndex = 0;
 
         for(int i = 1; i < totalPoints; ++i){
             if (location.distanceTo(locationList.get(i)) < minDist){
@@ -109,9 +110,10 @@ public class NavigationActivity extends AppCompatActivity implements
             }
         }
 
-        if (nextPointIndex != minDistIndex || nextPointIndex != minDistIndex + 1){
+        if (nextPointIndex != minDistIndex && nextPointIndex != minDistIndex + 1){
             nextPointIndex = minDistIndex;
         }
+
         if (location.distanceTo(locationList.get(nextPointIndex)) < 10){
             ++nextPointIndex;
         }
@@ -125,7 +127,8 @@ public class NavigationActivity extends AppCompatActivity implements
             nextPointText = locationList.get(nextPointIndex).getLatitude()
                     + "\t\t" + locationList.get(nextPointIndex).getLongitude()
                     + "\n" + location.distanceTo(locationList.get(nextPointIndex))
-                    + "\t\tnextPointIndex = " + nextPointIndex;
+                    + "\t\tnextIndex = " + nextPointIndex
+                    + "\tminIndex = " + minDistIndex;
 
         tv_location_data_1.setText(location.getLatitude()
                 + "\t\t" + location.getLongitude()

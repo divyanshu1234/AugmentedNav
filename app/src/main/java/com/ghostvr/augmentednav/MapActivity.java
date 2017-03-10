@@ -3,7 +3,9 @@ package com.ghostvr.augmentednav;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PointF;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -13,14 +15,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoBoundingBox;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.PositioningManager;
+import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
+import com.here.android.mpa.mapping.MapGesture;
+import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.routing.RouteManager;
 import com.here.android.mpa.routing.RouteOptions;
@@ -28,6 +35,7 @@ import com.here.android.mpa.routing.RoutePlan;
 import com.here.android.mpa.routing.RouteResult;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,8 +47,8 @@ public class MapActivity extends AppCompatActivity {
 
 
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
-    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE };
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private TextView tv_map = null;
     private Button b_startNavigation = null;
@@ -48,7 +56,8 @@ public class MapActivity extends AppCompatActivity {
     private EditText et_start_longitude = null;
     private EditText et_end_latitude = null;
     private EditText et_end_longitude = null;
-
+    private RadioButton rb_start = null;
+    private RadioButton rb_end = null;
 
     private double start_latitude;
     private double start_longitude;
@@ -56,8 +65,7 @@ public class MapActivity extends AppCompatActivity {
     private double end_longitude;
 
     private RouteManager.Listener routeManagerListener =
-            new RouteManager.Listener()
-            {
+            new RouteManager.Listener() {
                 public void onCalculateRouteFinished(RouteManager.Error errorCode,
                                                      List<RouteResult> result) {
 
@@ -71,8 +79,8 @@ public class MapActivity extends AppCompatActivity {
                         l1.setLongitude(routeCoordinates.get(0).getLongitude());
                         locationList.add(l1);
 
-                        for (int i = 1; i < routeCoordinates.size(); ++i){
-                            if (routeCoordinates.get(i).distanceTo(routeCoordinates.get(i-1)) > 10){
+                        for (int i = 1; i < routeCoordinates.size(); ++i) {
+                            if (routeCoordinates.get(i).distanceTo(routeCoordinates.get(i - 1)) > 10) {
                                 Location location = new Location("location");
                                 location.setLatitude(routeCoordinates.get(i).getLatitude());
                                 location.setLongitude(routeCoordinates.get(i).getLongitude());
@@ -124,7 +132,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void getDirections(View view) {
 
-        if (validateInput()){
+        if (validateInput()) {
             // 1. clear previous results
             tv_map.setText("");
             if (map != null && mapRoute != null) {
@@ -158,7 +166,7 @@ public class MapActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT)
                         .show();
             }
-        } else{
+        } else {
             tv_map.setText("Invalid data");
         }
     }
@@ -171,7 +179,7 @@ public class MapActivity extends AppCompatActivity {
             start_longitude = Double.parseDouble(et_start_longitude.getText().toString());
             end_latitude = Double.parseDouble(et_end_latitude.getText().toString());
             end_longitude = Double.parseDouble(et_end_longitude.getText().toString());
-        } catch (Exception e){
+        } catch (Exception e) {
             isValidInput = false;
         }
         return isValidInput;
@@ -230,24 +238,135 @@ public class MapActivity extends AppCompatActivity {
         et_start_longitude = (EditText) findViewById(R.id.et_start_longitude);
         et_end_latitude = (EditText) findViewById(R.id.et_end_latitude);
         et_end_longitude = (EditText) findViewById(R.id.et_end_longitude);
+        rb_start = (RadioButton) findViewById(R.id.rb_start);
+        rb_end = (RadioButton) findViewById(R.id.rb_end);
+
+        rb_start.setChecked(true);
+
+        rb_start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rb_end.setChecked(false);
+            }
+        });
+
+        rb_end.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rb_start.setChecked(false);
+            }
+        });
 
         // Search for the map fragment to finish setup by calling init().
-        mapFragment = (MapFragment)getFragmentManager().findFragmentById(
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(
                 R.id.mapfragment);
         mapFragment.init(new OnEngineInitListener() {
             @Override
             public void onEngineInitializationCompleted(
-                    OnEngineInitListener.Error error)
-            {
+                    OnEngineInitListener.Error error) {
                 if (error == OnEngineInitListener.Error.NONE) {
                     // retrieve a reference of the map from the map fragment
                     map = mapFragment.getMap();
                     // Set the map center to the Vancouver region (no animation)
-                    map.setCenter(new GeoCoordinate(12.995532, 80.239312, 0.0),
+                    map.setCenter(new GeoCoordinate(12.990323, 80.233413, 0.0),
                             Map.Animation.NONE);
                     // Set the zoom level to the average between min and max
-                    map.setZoomLevel(
-                            (map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
+                    map.setZoomLevel(15.4);
+
+                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    MapMarker mapMarker = new MapMarker();
+                    mapMarker.setCoordinate(new GeoCoordinate(location.getLatitude(), location.getLongitude()));
+                    map.addMapObject(mapMarker);
+
+                    mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener() {
+                        @Override
+                        public void onPanStart() {
+
+                        }
+
+                        @Override
+                        public void onPanEnd() {
+
+                        }
+
+                        @Override
+                        public void onMultiFingerManipulationStart() {
+
+                        }
+
+                        @Override
+                        public void onMultiFingerManipulationEnd() {
+
+                        }
+
+                        @Override
+                        public boolean onMapObjectsSelected(List<ViewObject> list) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onTapEvent(PointF pointF) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onDoubleTapEvent(PointF pointF) {
+                            return false;
+                        }
+
+                        @Override
+                        public void onPinchLocked() {
+
+                        }
+
+                        @Override
+                        public boolean onPinchZoomEvent(float v, PointF pointF) {
+                            return false;
+                        }
+
+                        @Override
+                        public void onRotateLocked() {
+
+                        }
+
+                        @Override
+                        public boolean onRotateEvent(float v) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onTiltEvent(float v) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onLongPressEvent(PointF pointF) {
+                            GeoCoordinate geoCoordinate = map.pixelToGeo(pointF);
+
+                            if (rb_start.isChecked()){
+                                et_start_latitude.setText(geoCoordinate.getLatitude() + "");
+                                et_start_longitude.setText(geoCoordinate.getLongitude() + "");
+                            } else {
+                                et_end_latitude.setText(geoCoordinate.getLatitude() + "");
+                                et_end_longitude.setText(geoCoordinate.getLongitude() + "");
+                            }
+                            return false;
+                        }
+
+                        @Override
+                        public void onLongPressRelease() {
+
+                        }
+
+                        @Override
+                        public boolean onTwoFingerTapEvent(PointF pointF) {
+                            return false;
+                        }
+                    });
                 } else {
                     System.out.println("ERROR: Cannot initialize Map Fragment");
                 }

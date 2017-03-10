@@ -45,7 +45,11 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:hint="Start Longitude"/>
-        
+
+        <RadioButton
+            android:id="@+id/rb_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 
@@ -72,6 +76,10 @@
             android:layout_weight="1"
             android:hint="End Longitude"/>
 
+        <RadioButton
+            android:id="@+id/rb_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <android.widget.Button

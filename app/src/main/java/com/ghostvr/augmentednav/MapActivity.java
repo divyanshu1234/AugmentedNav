@@ -279,9 +279,11 @@ public class MapActivity extends AppCompatActivity {
                     }
                     Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     MapMarker mapMarker = new MapMarker();
-                    mapMarker.setCoordinate(new GeoCoordinate(location.getLatitude(), location.getLongitude()));
-                    map.addMapObject(mapMarker);
 
+                    if (location != null) {
+                        mapMarker.setCoordinate(new GeoCoordinate(location.getLatitude(), location.getLongitude()));
+                        map.addMapObject(mapMarker);
+                    }
                     mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener() {
                         @Override
                         public void onPanStart() {

@@ -8,12 +8,6 @@
     android:orientation="vertical"
     tools:context="com.ghostvr.augmentednav.NavigationActivity">
 
-    <com.ghostvr.augmentednav.CustomGLSurfaceView
-        android:id="@+id/gl_surface_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"/>
-
     <LinearLayout
         android:layout_height="0dp"
         android:layout_width="match_parent"
@@ -34,4 +28,10 @@
             android:text="Location Data 2"/>
 
     </LinearLayout>
+
+    <com.ghostvr.augmentednav.CustomGLSurfaceView
+        android:id="@+id/gl_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"/>
 </LinearLayout>

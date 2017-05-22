@@ -273,11 +273,21 @@ public class MapActivity extends AppCompatActivity {
                     // Set the zoom level to the average between min and max
                     map.setZoomLevel(15.4);
 
+
+                    // Getting last known location
                     LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
+
+                    // Using GPS to get location
                     Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                    // Using NETWORK if GPS does not work
+                    if (location == null)
+                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                    // Adding map marker
                     MapMarker mapMarker = new MapMarker();
 
                     if (location != null) {
@@ -348,6 +358,7 @@ public class MapActivity extends AppCompatActivity {
                         @Override
                         public boolean onLongPressEvent(PointF pointF) {
                             GeoCoordinate geoCoordinate = map.pixelToGeo(pointF);
+
 
                             if (rb_start.isChecked()){
                                 et_start_latitude.setText(geoCoordinate.getLatitude() + "");

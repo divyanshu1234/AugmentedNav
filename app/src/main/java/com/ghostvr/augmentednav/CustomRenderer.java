@@ -39,10 +39,12 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
     private final float[] finalMatrix = new float[16];
 
     public float[] mAccumulatedRotationMatrix;
+    public float eyeTranslation;
 
     public CustomRenderer(Context context){
         this.context = context;
         mAccumulatedRotationMatrix = new float[16];
+        eyeTranslation = 0.0f;
     }
 
     @Override
@@ -84,7 +86,7 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
 
 
         setIdentityM(mTranslationMatrix, 0);
-        translateM(mTranslationMatrix, 0, 0f, 0f, -2.5f);
+        translateM(mTranslationMatrix, 0, 0f, eyeTranslation, -5.0f);
 
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mTranslationMatrix, 0, mTempMatrix, 0);

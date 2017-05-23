@@ -296,6 +296,8 @@ public class MapActivity extends AppCompatActivity {
                             if (rb_start.isChecked()){
                                 et_start_latitude.setText(geoCoordinate.getLatitude() + "");
                                 et_start_longitude.setText(geoCoordinate.getLongitude() + "");
+                                rb_start.setChecked(false);
+                                rb_end.setChecked(true);
                             } else {
                                 et_end_latitude.setText(geoCoordinate.getLatitude() + "");
                                 et_end_longitude.setText(geoCoordinate.getLongitude() + "");

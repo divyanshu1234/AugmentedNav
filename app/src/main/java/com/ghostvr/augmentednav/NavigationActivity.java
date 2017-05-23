@@ -17,6 +17,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -49,8 +53,9 @@ public class NavigationActivity extends AppCompatActivity implements
     private static int nextPointIndex = 0;
     private double dx, dy;
 
-    private static TextView tv_location_data_1;
-    private static TextView tv_location_data_2;
+    private TextView tv_location_data_1;
+    private TextView tv_location_data_2;
+    private LinearLayout ll_location_data;
 
     GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
@@ -68,15 +73,27 @@ public class NavigationActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
         setContentView(R.layout.activity_navigation);
 
         glsv_left = (CustomGLSurfaceView) findViewById(R.id.glsv_left);
         glsv_right = (CustomGLSurfaceView) findViewById(R.id.glsv_right);
+        glsv_left.setEyeTranslation(-0.032f);
+        glsv_right.setEyeTranslation(0.032f);
         left_rendererSet = glsv_left.isRendererSet();
         right_rendererSet = glsv_right.isRendererSet();
 
         tv_location_data_1 = (TextView) findViewById(R.id.tv_location_data_1);
         tv_location_data_2 = (TextView) findViewById(R.id.tv_location_data_2);
+        ll_location_data = (LinearLayout) findViewById(R.id.ll_location_data);
+
+        tv_location_data_1.setVisibility(View.GONE);//TODO - remove
+        tv_location_data_2.setVisibility(View.GONE);
+        ll_location_data.setVisibility(View.GONE);
 
         locationList = (ArrayList<Location>)getIntent().getSerializableExtra("locationList");
         totalPoints = locationList.size();
@@ -144,7 +161,7 @@ public class NavigationActivity extends AppCompatActivity implements
     }
 
 
-    private static void setLocationDataText(Location location) {
+    private void setLocationDataText(Location location) {
         String nextPointText;
         if (nextPointIndex == totalPoints)
             nextPointText = "Reached";
@@ -224,7 +241,7 @@ public class NavigationActivity extends AppCompatActivity implements
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
         setIndex(location);
-        setLocationDataText(location);
+        //setLocationDataText(location); TODO - remove
 
         float angleInDegrees = calcDirection(location) * 180 / (float) Math.PI;
 
@@ -236,7 +253,7 @@ public class NavigationActivity extends AppCompatActivity implements
 
         angleInDegrees -= geoField.getDeclination();
 
-        tv_location_data_2.setText("dx = " + dx + "\ndy = " + dy + "\nangle = " + angleInDegrees);
+        //tv_location_data_2.setText("dx = " + dx + "\ndy = " + dy + "\nangle = " + angleInDegrees); TODO - remove
 
         CustomGLSurfaceView.angleToNextPoint = angleInDegrees;
     }

@@ -69,4 +69,8 @@ public class CustomGLSurfaceView extends GLSurfaceView {
         mRenderer.mAccumulatedRotationMatrix = rotationMatrix.clone();
     }
 
+    public void setEyeTranslation(float eyeTranslation){
+        mRenderer.eyeTranslation = eyeTranslation;
+    }
+
 }

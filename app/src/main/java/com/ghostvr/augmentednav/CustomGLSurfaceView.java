@@ -18,7 +18,7 @@ public class CustomGLSurfaceView extends GLSurfaceView {
     private CustomRenderer mRenderer;
     private Context context;
 
-    private float angleToNextPoint;
+    public static float angleToNextPoint;
 
 
     public CustomGLSurfaceView(Context context) {
@@ -67,11 +67,4 @@ public class CustomGLSurfaceView extends GLSurfaceView {
         mRenderer.mAccumulatedRotationMatrix = rotationMatrix.clone();
     }
 
-    public void setAngleToNextPoint(float angleToNextPoint) {
-        this.angleToNextPoint = angleToNextPoint;
-    }
-
-    public float getAngleToNextPoint() {
-        return angleToNextPoint;
-    }
 }

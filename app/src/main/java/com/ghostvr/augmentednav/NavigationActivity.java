@@ -38,7 +38,9 @@ public class NavigationActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener, SensorEventListener {
 
     private CustomGLSurfaceView glsv_left;
-    private boolean rendererSet = false;
+    private CustomGLSurfaceView glsv_right;
+    private boolean left_rendererSet = false;
+    private boolean right_rendererSet = false;
 
     private static List<Location> locationList;
     private static int totalPoints = 0;
@@ -69,7 +71,9 @@ public class NavigationActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_navigation);
 
         glsv_left = (CustomGLSurfaceView) findViewById(R.id.glsv_left);
-        rendererSet = glsv_left.isRendererSet();
+        glsv_right = (CustomGLSurfaceView) findViewById(R.id.glsv_right);
+        left_rendererSet = glsv_left.isRendererSet();
+        right_rendererSet = glsv_right.isRendererSet();
 
         tv_location_data_1 = (TextView) findViewById(R.id.tv_location_data_1);
         tv_location_data_2 = (TextView) findViewById(R.id.tv_location_data_2);
@@ -78,7 +82,6 @@ public class NavigationActivity extends AppCompatActivity implements
         totalPoints = locationList.size();
 
         buildGoogleApiClient();
-
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
@@ -235,7 +238,7 @@ public class NavigationActivity extends AppCompatActivity implements
 
         tv_location_data_2.setText("dx = " + dx + "\ndy = " + dy + "\nangle = " + angleInDegrees);
 
-        glsv_left.setAngleToNextPoint(angleInDegrees);
+        CustomGLSurfaceView.angleToNextPoint = angleInDegrees;
     }
 
 
@@ -249,8 +252,9 @@ public class NavigationActivity extends AppCompatActivity implements
         mSensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationReading);
         mSensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
 
-        rotateM(mRotationMatrix, 0, glsv_left.getAngleToNextPoint(), 0f, 0f, 1f);
+        rotateM(mRotationMatrix, 0, CustomGLSurfaceView.angleToNextPoint, 0f, 0f, 1f);
         glsv_left.setRotationMatrix(mRotationMatrix);
+        glsv_right.setRotationMatrix(mRotationMatrix);
     }
 
 
@@ -270,8 +274,12 @@ public class NavigationActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        if (rendererSet) {
+        if (left_rendererSet) {
             glsv_left.onResume();
+        }
+
+        if (right_rendererSet){
+            glsv_right.onResume();
         }
 
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates)
@@ -284,8 +292,12 @@ public class NavigationActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        if (rendererSet) {
+        if (left_rendererSet) {
             glsv_left.onPause();
+        }
+
+        if (right_rendererSet){
+            glsv_right.onPause();
         }
 
         if (mGoogleApiClient.isConnected())

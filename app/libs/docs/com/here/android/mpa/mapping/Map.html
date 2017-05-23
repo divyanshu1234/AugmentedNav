@@ -711,10 +711,10 @@ extends java.lang.Object</pre>
             <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_ZOOM_LEVEL"><code>MOVE_PRESERVE_ZOOM_LEVEL</code></a> to keep the current level)</dd>
 <dd><code>orientation</code> - Desired orientation of the newly-centered <code>Map</code> (pass
             <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_ORIENTATION"><code>MOVE_PRESERVE_ORIENTATION</code></a> to keep the current orientation)</dd>
-<dd><code>tilt</code> - Desired tilt angle of the newly-centered <code>Map</code> (pass
+<dd><code>tilt</code> - Desired tilt angleToNextPoint of the newly-centered <code>Map</code> (pass
             <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_TILT"><code>MOVE_PRESERVE_TILT</code></a> to keep the current tilt)</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.UnsupportedOperationException</code> - If orientation angle is not set to MOVE_PRESERVE_ORIENTATION or tilt is not
+<dd><code>java.lang.UnsupportedOperationException</code> - If orientation angleToNextPoint is not set to MOVE_PRESERVE_ORIENTATION or tilt is not
              set to MOVE_PRESERVE_TILT.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../com/here/android/mpa/mapping/Map.html#setCenter-com.here.android.mpa.common.GeoCoordinate-com.here.android.mpa.mapping.Map.Animation-"><code>setCenter(GeoCoordinate, Animation)</code></a>, 
@@ -754,7 +754,7 @@ extends java.lang.Object</pre>
                       float&nbsp;orientation,
                       float&nbsp;tilt)</pre>
 <div class="block">Centers the map at the specified screen pixel coordinates. The zoom level, orientation and
- tilt angle be adjusted at the same time.</div>
+ tilt angleToNextPoint be adjusted at the same time.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>newCenter</code> - A <code>PointF</code> representing the screen pixel coordinates to set as map center.</dd>
@@ -762,11 +762,11 @@ extends java.lang.Object</pre>
 <dd><code>zoomLevel</code> - Desired zoom level of the newly-centered <code>Map</code>. Use
             <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_ZOOM_LEVEL"><code>MOVE_PRESERVE_ZOOM_LEVEL</code></a> to keep the current zoom level.</dd>
 <dd><code>orientation</code> - Desired orientation of the newly-centered <code>Map</code>. Use
-            <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_ORIENTATION"><code>MOVE_PRESERVE_ORIENTATION</code></a> to keep the current orientation angle.</dd>
-<dd><code>tilt</code> - Desired tilt angle of the newly-centered <code>Map</code>. Use
-            <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_TILT"><code>MOVE_PRESERVE_TILT</code></a> to keep the current tilt angle.</dd>
+            <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_ORIENTATION"><code>MOVE_PRESERVE_ORIENTATION</code></a> to keep the current orientation angleToNextPoint.</dd>
+<dd><code>tilt</code> - Desired tilt angleToNextPoint of the newly-centered <code>Map</code>. Use
+            <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_TILT"><code>MOVE_PRESERVE_TILT</code></a> to keep the current tilt angleToNextPoint.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.UnsupportedOperationException</code> - if orientation angle is not set to MOVE_PRESERVE_ORIENTATION or tilt is not
+<dd><code>java.lang.UnsupportedOperationException</code> - if orientation angleToNextPoint is not set to MOVE_PRESERVE_ORIENTATION or tilt is not
              set to MOVE_PRESERVE_TILT.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../com/here/android/mpa/mapping/Map.html#setCenter-com.here.android.mpa.common.GeoCoordinate-com.here.android.mpa.mapping.Map.Animation-double-float-float-"><code>setCenter(GeoCoordinate, Animation, double, float, float)</code></a></dd>
@@ -830,7 +830,7 @@ extends java.lang.Object</pre>
 <dd><code>orientation</code> - Desired orientation of the <code>Map</code> (Use <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_ORIENTATION"><code>MOVE_PRESERVE_ORIENTATION</code></a> to
             keep the current orientation)</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.UnsupportedOperationException</code> - If orientation angle is not set to MOVE_PRESERVE_ORIENTATION.</dd>
+<dd><code>java.lang.UnsupportedOperationException</code> - If orientation angleToNextPoint is not set to MOVE_PRESERVE_ORIENTATION.</dd>
 </dl>
 </li>
 </ul>
@@ -865,7 +865,7 @@ extends java.lang.Object</pre>
 <dd><code>orientation</code> - Desired orientation of the <code>Map</code> (pass <a href="../../../../../com/here/android/mpa/mapping/Map.html#MOVE_PRESERVE_ORIENTATION"><code>MOVE_PRESERVE_ORIENTATION</code></a> to
             keep the current orientation)</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.UnsupportedOperationException</code> - If orientation angle is not set to MOVE_PRESERVE_ORIENTATION.</dd>
+<dd><code>java.lang.UnsupportedOperationException</code> - If orientation angleToNextPoint is not set to MOVE_PRESERVE_ORIENTATION.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../../../com/here/android/mpa/mapping/Map.html#setTransformCenter-android.graphics.PointF-"><code>setTransformCenter(PointF)</code></a></dd>
 </dl>

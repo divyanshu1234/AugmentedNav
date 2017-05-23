@@ -240,7 +240,7 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.html#onTiltEvent-float-">onTiltEvent</a></span>(float&nbsp;angle)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.html#onTiltEvent-float-">onTiltEvent</a></span>(float&nbsp;angleToNextPoint)</code>
 <div class="block">A callback indicating that a user has performed a two-finger-tilt gesture on a map.</div>
 </td>
 </tr>
@@ -440,7 +440,7 @@ var activeTableTab = "activeTableTab";
 <div class="block">A callback indicating that a user has performed a rotate gesture on a map.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>rotateAngle</code> - An angle, in degrees, of the user interaction gesture since its last change</dd>
+<dd><code>rotateAngle</code> - An angleToNextPoint, in degrees, of the user interaction gesture since its last change</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>True if consumed (which prevents the default map rotate-to-here behavior), false
          otherwise</dd>
@@ -453,11 +453,11 @@ var activeTableTab = "activeTableTab";
 <ul class="blockList">
 <li class="blockList">
 <h4>onTiltEvent</h4>
-<pre>boolean&nbsp;onTiltEvent(float&nbsp;angle)</pre>
+<pre>boolean&nbsp;onTiltEvent(float&nbsp;angleToNextPoint)</pre>
 <div class="block">A callback indicating that a user has performed a two-finger-tilt gesture on a map.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>angle</code> - An angle, in degrees, to which the map tilt is to change.</dd>
+<dd><code>angleToNextPoint</code> - An angleToNextPoint, in degrees, to which the map tilt is to change.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>True if consumed (which prevents the default map tilt-to-here behavior), false
          otherwise</dd>

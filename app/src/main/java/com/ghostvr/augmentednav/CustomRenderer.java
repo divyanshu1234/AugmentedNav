@@ -99,6 +99,4 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
         mArrow.draw(finalMatrix);
     }
 
-    public volatile float mAngle;
-
 }

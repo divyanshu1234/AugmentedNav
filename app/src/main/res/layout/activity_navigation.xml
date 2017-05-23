@@ -30,7 +30,7 @@
     </LinearLayout>
 
     <com.ghostvr.augmentednav.CustomGLSurfaceView
-        android:id="@+id/gl_surface_view"
+        android:id="@+id/glsv_left"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"/>

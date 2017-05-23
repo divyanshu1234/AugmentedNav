@@ -1,8 +1,13 @@
 package com.ghostvr.augmentednav;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import com.google.android.gms.location.LocationListener;
 
@@ -23,14 +28,16 @@ import com.google.android.gms.location.LocationServices;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.opengl.Matrix.rotateM;
+
 /**
  * Created by Divyanshu on 3/8/17.
  */
 
 public class NavigationActivity extends AppCompatActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+        ConnectionCallbacks, OnConnectionFailedListener, LocationListener, SensorEventListener {
 
-    private CustomGLSurfaceView glSurfaceView;
+    private CustomGLSurfaceView glsv_left;
     private boolean rendererSet = false;
 
     private static List<Location> locationList;
@@ -49,13 +56,20 @@ public class NavigationActivity extends AppCompatActivity implements
     Location mCurrentLocation;
 
 
+    private SensorManager mSensorManager;
+    private Sensor mRotationSensor;
+    private final float[] mRotationReading = new float[3];
+    private final float[] mRotationMatrix = new float[16];
+    private final float[] mOrientationAngles = new float[3];
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-        glSurfaceView = (CustomGLSurfaceView) findViewById(R.id.gl_surface_view);
-        rendererSet = glSurfaceView.isRendererSet();
+        glsv_left = (CustomGLSurfaceView) findViewById(R.id.glsv_left);
+        rendererSet = glsv_left.isRendererSet();
 
         tv_location_data_1 = (TextView) findViewById(R.id.tv_location_data_1);
         tv_location_data_2 = (TextView) findViewById(R.id.tv_location_data_2);
@@ -64,6 +78,10 @@ public class NavigationActivity extends AppCompatActivity implements
         totalPoints = locationList.size();
 
         buildGoogleApiClient();
+
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
     }
 
 
@@ -83,7 +101,6 @@ public class NavigationActivity extends AppCompatActivity implements
         mLocationRequest.setInterval(10);
         mLocationRequest.setFastestInterval(5);
         mLocationRequest.setSmallestDisplacement(2f);
-
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -98,6 +115,50 @@ public class NavigationActivity extends AppCompatActivity implements
     protected void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (mCurrentLocation == null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
+
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+    }
+
+
+    private static void setLocationDataText(Location location) {
+        String nextPointText;
+        if (nextPointIndex == totalPoints)
+            nextPointText = "Reached";
+        else
+            nextPointText = locationList.get(nextPointIndex).getLatitude()
+                    + "\t\t" + locationList.get(nextPointIndex).getLongitude()
+                    + "\n" + location.distanceTo(locationList.get(nextPointIndex))
+                    + "\t\tnextIndex = " + nextPointIndex
+                    + "\tminIndex = " + minDistIndex;
+
+        tv_location_data_1.setText(location.getLatitude()
+                + "\t\t" + location.getLongitude()
+                + "\n" + nextPointText
+                + "\nTotal Points = " + totalPoints);
+        Log.d("Location", location.getLatitude() + "\t\t" + location.getLongitude() + "\n" + nextPointText);
+    }
+
 
     private void setIndex(Location location) {
         float minDist = location.distanceTo(locationList.get(0));
@@ -117,24 +178,6 @@ public class NavigationActivity extends AppCompatActivity implements
         if (location.distanceTo(locationList.get(nextPointIndex)) < 10){
             ++nextPointIndex;
         }
-    }
-
-    private static void setLocationDataText(Location location) {
-        String nextPointText;
-        if (nextPointIndex == totalPoints)
-            nextPointText = "Reached";
-        else
-            nextPointText = locationList.get(nextPointIndex).getLatitude()
-                    + "\t\t" + locationList.get(nextPointIndex).getLongitude()
-                    + "\n" + location.distanceTo(locationList.get(nextPointIndex))
-                    + "\t\tnextIndex = " + nextPointIndex
-                    + "\tminIndex = " + minDistIndex;
-
-        tv_location_data_1.setText(location.getLatitude()
-                + "\t\t" + location.getLongitude()
-                + "\n" + nextPointText
-                + "\nTotal Points = " + totalPoints);
-        Log.d("Location", location.getLatitude() + "\t\t" + location.getLongitude() + "\n" + nextPointText);
     }
 
     private float calcDirection(Location uLocation) {
@@ -174,7 +217,6 @@ public class NavigationActivity extends AppCompatActivity implements
             return (float) (Math.atan2(dx, -dy) - Math.PI);
     }
 
-
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
@@ -193,33 +235,30 @@ public class NavigationActivity extends AppCompatActivity implements
 
         tv_location_data_2.setText("dx = " + dx + "\ndy = " + dy + "\nangle = " + angleInDegrees);
 
-        glSurfaceView.setAngle(angleInDegrees);
+        glsv_left.setAngleToNextPoint(angleInDegrees);
     }
 
+
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (mCurrentLocation == null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            System.arraycopy(event.values, 0, mRotationReading,
+                    0, mRotationReading.length);
         }
 
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
+        mSensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationReading);
+        mSensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
 
+        rotateM(mRotationMatrix, 0, glsv_left.getAngleToNextPoint(), 0f, 0f, 1f);
+        glsv_left.setRotationMatrix(mRotationMatrix);
     }
+
+
 
     @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
 
     @Override
     protected void onStart() {
@@ -232,11 +271,13 @@ public class NavigationActivity extends AppCompatActivity implements
         super.onResume();
 
         if (rendererSet) {
-            glSurfaceView.onResume();
+            glsv_left.onResume();
         }
 
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates)
             startLocationUpdates();
+
+        mSensorManager.registerListener(this, mRotationSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
@@ -244,11 +285,13 @@ public class NavigationActivity extends AppCompatActivity implements
         super.onPause();
 
         if (rendererSet) {
-            glSurfaceView.onPause();
+            glsv_left.onPause();
         }
 
         if (mGoogleApiClient.isConnected())
             stopLocationUpdates();
+
+        mSensorManager.unregisterListener(this);
     }
 
     @Override

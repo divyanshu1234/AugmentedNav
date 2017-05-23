@@ -261,7 +261,7 @@ implements <a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGes
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.OnGestureListenerAdapter.html#onTiltEvent-float-">onTiltEvent</a></span>(float&nbsp;angle)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.OnGestureListenerAdapter.html#onTiltEvent-float-">onTiltEvent</a></span>(float&nbsp;angleToNextPoint)</code>
 <div class="block">A callback indicating that a user has performed a two-finger-tilt gesture on a map.</div>
 </td>
 </tr>
@@ -524,7 +524,7 @@ implements <a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGes
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.html#onRotateEvent-float-">onRotateEvent</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.html" title="interface in com.here.android.mpa.mapping">MapGesture.OnGestureListener</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>rotateAngle</code> - An angle, in degrees, of the user interaction gesture since its last change</dd>
+<dd><code>rotateAngle</code> - An angleToNextPoint, in degrees, of the user interaction gesture since its last change</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>True if consumed (which prevents the default map rotate-to-here behavior), false
          otherwise</dd>
@@ -537,14 +537,14 @@ implements <a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGes
 <ul class="blockList">
 <li class="blockList">
 <h4>onTiltEvent</h4>
-<pre>public&nbsp;boolean&nbsp;onTiltEvent(float&nbsp;angle)</pre>
+<pre>public&nbsp;boolean&nbsp;onTiltEvent(float&nbsp;angleToNextPoint)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.html#onTiltEvent-float-">MapGesture.OnGestureListener</a></code></span></div>
 <div class="block">A callback indicating that a user has performed a two-finger-tilt gesture on a map.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.html#onTiltEvent-float-">onTiltEvent</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../com/here/android/mpa/mapping/MapGesture.OnGestureListener.html" title="interface in com.here.android.mpa.mapping">MapGesture.OnGestureListener</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>angle</code> - An angle, in degrees, to which the map tilt is to change.</dd>
+<dd><code>angleToNextPoint</code> - An angleToNextPoint, in degrees, to which the map tilt is to change.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>True if consumed (which prevents the default map tilt-to-here behavior), false
          otherwise</dd>

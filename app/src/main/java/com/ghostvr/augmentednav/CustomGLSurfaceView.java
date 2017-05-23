@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.Toast;
 
 import static android.opengl.Matrix.rotateM;
@@ -64,6 +65,7 @@ public class CustomGLSurfaceView extends GLSurfaceView {
     }
 
     public void setRotationMatrix(float[] rotationMatrix){
+        Log.d("Angle to next point", angleToNextPoint + "");
         mRenderer.mAccumulatedRotationMatrix = rotationMatrix.clone();
     }
 

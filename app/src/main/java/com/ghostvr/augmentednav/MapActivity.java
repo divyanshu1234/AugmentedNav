@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.here.android.mpa.common.GeoBoundingBox;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
-import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
@@ -35,7 +34,6 @@ import com.here.android.mpa.routing.RoutePlan;
 import com.here.android.mpa.routing.RouteResult;
 
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,6 +62,8 @@ public class MapActivity extends AppCompatActivity {
     private double end_latitude;
     private double end_longitude;
 
+    Location currentLocation;
+
     private RouteManager.Listener routeManagerListener =
             new RouteManager.Listener() {
                 public void onCalculateRouteFinished(RouteManager.Error errorCode,
@@ -74,14 +74,15 @@ public class MapActivity extends AppCompatActivity {
                         final List<Location> locationList = new ArrayList<>();
                         List<GeoCoordinate> routeCoordinates = result.get(0).getRoute().getRouteGeometry();
 
-                        Location l1 = new Location("location");
+
+                        Location l1 = new Location("currentLocation");
                         l1.setLatitude(routeCoordinates.get(0).getLatitude());
                         l1.setLongitude(routeCoordinates.get(0).getLongitude());
                         locationList.add(l1);
 
                         for (int i = 1; i < routeCoordinates.size(); ++i) {
                             if (routeCoordinates.get(i).distanceTo(routeCoordinates.get(i - 1)) > 10) {
-                                Location location = new Location("location");
+                                Location location = new Location("currentLocation");
                                 location.setLatitude(routeCoordinates.get(i).getLatitude());
                                 location.setLongitude(routeCoordinates.get(i).getLongitude());
                                 locationList.add(location);
@@ -130,62 +131,6 @@ public class MapActivity extends AppCompatActivity {
         checkPermissions();
     }
 
-    public void getDirections(View view) {
-
-        if (validateInput()) {
-            // 1. clear previous results
-            tv_map.setText("");
-            if (map != null && mapRoute != null) {
-                map.removeMapObject(mapRoute);
-                mapRoute = null;
-            }
-            // 2. Initialize RouteManager
-            RouteManager routeManager = new RouteManager();
-
-            // 3. Select routing options via RoutingMode
-            RoutePlan routePlan = new RoutePlan();
-
-            RouteOptions routeOptions = new RouteOptions();
-            routeOptions.setTransportMode(RouteOptions.TransportMode.CAR);
-            routeOptions.setRouteType(RouteOptions.Type.FASTEST);
-            routePlan.setRouteOptions(routeOptions);
-
-            // 4. Select Way-points for your routes
-            // Start Point
-            routePlan.addWaypoint(new GeoCoordinate(start_latitude, start_longitude));
-
-            // End Point
-            routePlan.addWaypoint(new GeoCoordinate(end_latitude, end_longitude));
-
-            // 5. Retrieve Routing information via RouteManagerListener
-            RouteManager.Error error =
-                    routeManager.calculateRoute(routePlan, routeManagerListener);
-            if (error != RouteManager.Error.NONE) {
-                Toast.makeText(getApplicationContext(),
-                        "Route calculation failed with: " + error.toString(),
-                        Toast.LENGTH_SHORT)
-                        .show();
-            }
-        } else {
-            tv_map.setText("Invalid data");
-        }
-    }
-
-    private boolean validateInput() {
-        boolean isValidInput = true;
-
-        try {
-            start_latitude = Double.parseDouble(et_start_latitude.getText().toString());
-            start_longitude = Double.parseDouble(et_start_longitude.getText().toString());
-            end_latitude = Double.parseDouble(et_end_latitude.getText().toString());
-            end_longitude = Double.parseDouble(et_end_longitude.getText().toString());
-        } catch (Exception e) {
-            isValidInput = false;
-        }
-        return isValidInput;
-    }
-
-
     //Checks the dynamically-controlled permissions and requests missing permissions from end user.
     protected void checkPermissions() {
         final List<String> missingPermissions = new ArrayList<>();
@@ -229,6 +174,7 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+
     private void initialize() {
         setContentView(R.layout.activity_map);
 
@@ -241,8 +187,19 @@ public class MapActivity extends AppCompatActivity {
         rb_start = (RadioButton) findViewById(R.id.rb_start);
         rb_end = (RadioButton) findViewById(R.id.rb_end);
 
-        rb_start.setChecked(true);
+        // Getting last known currentLocation
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        // Using GPS to get currentLocation
+        currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        // Using NETWORK if GPS does not work
+        if (currentLocation == null)
+            currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
+
+        rb_start.setChecked(true);
         rb_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,91 +231,67 @@ public class MapActivity extends AppCompatActivity {
                     map.setZoomLevel(15.4);
 
 
-                    // Getting last known location
-                    LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-
-                    // Using GPS to get location
-                    Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                    // Using NETWORK if GPS does not work
-                    if (location == null)
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
                     // Adding map marker
                     MapMarker mapMarker = new MapMarker();
 
-                    if (location != null) {
-                        mapMarker.setCoordinate(new GeoCoordinate(location.getLatitude(), location.getLongitude()));
+                    if (currentLocation != null) {
+                        mapMarker.setCoordinate(new GeoCoordinate(currentLocation.getLatitude(), currentLocation.getLongitude()));
                         map.addMapObject(mapMarker);
                     }
                     mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener() {
                         @Override
                         public void onPanStart() {
-
                         }
-
                         @Override
                         public void onPanEnd() {
-
                         }
-
                         @Override
                         public void onMultiFingerManipulationStart() {
-
                         }
-
                         @Override
                         public void onMultiFingerManipulationEnd() {
-
                         }
-
                         @Override
                         public boolean onMapObjectsSelected(List<ViewObject> list) {
                             return false;
                         }
-
                         @Override
                         public boolean onTapEvent(PointF pointF) {
                             return false;
                         }
-
                         @Override
                         public boolean onDoubleTapEvent(PointF pointF) {
                             return false;
                         }
-
                         @Override
                         public void onPinchLocked() {
-
                         }
-
                         @Override
                         public boolean onPinchZoomEvent(float v, PointF pointF) {
                             return false;
                         }
-
                         @Override
                         public void onRotateLocked() {
-
                         }
-
                         @Override
                         public boolean onRotateEvent(float v) {
                             return false;
                         }
-
                         @Override
                         public boolean onTiltEvent(float v) {
                             return false;
+                        }
+                        @Override
+                        public boolean onTwoFingerTapEvent(PointF pointF) {
+                            return false;
+                        }
+                        @Override
+                        public void onLongPressRelease() {
                         }
 
                         @Override
                         public boolean onLongPressEvent(PointF pointF) {
                             GeoCoordinate geoCoordinate = map.pixelToGeo(pointF);
-
 
                             if (rb_start.isChecked()){
                                 et_start_latitude.setText(geoCoordinate.getLatitude() + "");
@@ -369,21 +302,67 @@ public class MapActivity extends AppCompatActivity {
                             }
                             return false;
                         }
-
-                        @Override
-                        public void onLongPressRelease() {
-
-                        }
-
-                        @Override
-                        public boolean onTwoFingerTapEvent(PointF pointF) {
-                            return false;
-                        }
                     });
                 } else {
                     System.out.println("ERROR: Cannot initialize Map Fragment");
                 }
             }
         });
+    }
+
+
+    private boolean validateInput() {
+        boolean isValidInput = true;
+
+        try {
+            start_latitude = Double.parseDouble(et_start_latitude.getText().toString());
+            start_longitude = Double.parseDouble(et_start_longitude.getText().toString());
+            end_latitude = Double.parseDouble(et_end_latitude.getText().toString());
+            end_longitude = Double.parseDouble(et_end_longitude.getText().toString());
+        } catch (Exception e) {
+            isValidInput = false;
+        }
+        return isValidInput;
+    }
+
+    public void getDirections(View view) {
+
+        if (validateInput()) {
+            // 1. clear previous results
+            tv_map.setText("");
+            if (map != null && mapRoute != null) {
+                map.removeMapObject(mapRoute);
+                mapRoute = null;
+            }
+            // 2. Initialize RouteManager
+            RouteManager routeManager = new RouteManager();
+
+            // 3. Select routing options via RoutingMode
+            RoutePlan routePlan = new RoutePlan();
+
+            RouteOptions routeOptions = new RouteOptions();
+            routeOptions.setTransportMode(RouteOptions.TransportMode.CAR);
+            routeOptions.setRouteType(RouteOptions.Type.FASTEST);
+            routePlan.setRouteOptions(routeOptions);
+
+            // 4. Select Way-points for your routes
+            // Start Point
+            routePlan.addWaypoint(new GeoCoordinate(start_latitude, start_longitude));
+
+            // End Point
+            routePlan.addWaypoint(new GeoCoordinate(end_latitude, end_longitude));
+
+            // 5. Retrieve Routing information via RouteManagerListener
+            RouteManager.Error error =
+                    routeManager.calculateRoute(routePlan, routeManagerListener);
+            if (error != RouteManager.Error.NONE) {
+                Toast.makeText(getApplicationContext(),
+                        "Route calculation failed with: " + error.toString(),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        } else {
+            tv_map.setText("Invalid data");
+        }
     }
 }

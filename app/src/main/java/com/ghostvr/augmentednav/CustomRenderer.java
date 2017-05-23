@@ -39,13 +39,9 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
     private final float[] finalMatrix = new float[16];
 
     public float[] mAccumulatedRotationMatrix;
-    public float mAngleX;
-    public float mAngleY;
-    public float mAngleZ;
 
     public CustomRenderer(Context context){
         this.context = context;
-        mAngleX = mAngleY = mAngleZ = 0.0f;
         mAccumulatedRotationMatrix = new float[16];
     }
 
@@ -58,7 +54,6 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
         glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
         mArrow = new Arrow(context);
-
     }
 
     @Override

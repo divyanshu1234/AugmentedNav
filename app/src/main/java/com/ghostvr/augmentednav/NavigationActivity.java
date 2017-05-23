@@ -234,7 +234,7 @@ public class NavigationActivity extends AppCompatActivity implements
                 (float) location.getAltitude(),
                 System.currentTimeMillis());
 
-        angleInDegrees += geoField.getDeclination();
+        angleInDegrees -= geoField.getDeclination();
 
         tv_location_data_2.setText("dx = " + dx + "\ndy = " + dy + "\nangle = " + angleInDegrees);
 

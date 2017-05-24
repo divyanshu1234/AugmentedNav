@@ -76,6 +76,7 @@ public class NavigationActivity extends AppCompatActivity implements
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
         setContentView(R.layout.activity_navigation);
@@ -95,10 +96,10 @@ public class NavigationActivity extends AppCompatActivity implements
         tv_location_data_2.setVisibility(View.GONE);
         ll_location_data.setVisibility(View.GONE);
 
-        locationList = (ArrayList<Location>)getIntent().getSerializableExtra("locationList");
-        totalPoints = locationList.size();
+        //locationList = (ArrayList<Location>)getIntent().getSerializableExtra("locationList");
+        //totalPoints = locationList.size();
 
-        buildGoogleApiClient();
+        //buildGoogleApiClient();
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
@@ -266,8 +267,8 @@ public class NavigationActivity extends AppCompatActivity implements
                     0, mRotationReading.length);
         }
 
-        mSensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationReading);
-        mSensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
+        SensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationReading);
+        SensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
 
         rotateM(mRotationMatrix, 0, CustomGLSurfaceView.angleToNextPoint, 0f, 0f, 1f);
         glsv_left.setRotationMatrix(mRotationMatrix);
@@ -284,7 +285,7 @@ public class NavigationActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
     }
 
     @Override
@@ -299,8 +300,8 @@ public class NavigationActivity extends AppCompatActivity implements
             glsv_right.onResume();
         }
 
-        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates)
-            startLocationUpdates();
+        //if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates)
+        //    startLocationUpdates();
 
         mSensorManager.registerListener(this, mRotationSensor, SensorManager.SENSOR_DELAY_GAME);
     }
@@ -317,15 +318,15 @@ public class NavigationActivity extends AppCompatActivity implements
             glsv_right.onPause();
         }
 
-        if (mGoogleApiClient.isConnected())
-            stopLocationUpdates();
+        //if (mGoogleApiClient.isConnected())
+        //    stopLocationUpdates();
 
         mSensorManager.unregisterListener(this);
     }
 
     @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+        //mGoogleApiClient.disconnect();
         super.onStop();
     }
 }

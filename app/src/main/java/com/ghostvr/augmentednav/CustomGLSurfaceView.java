@@ -65,7 +65,7 @@ public class CustomGLSurfaceView extends GLSurfaceView {
     }
 
     public void setRotationMatrix(float[] rotationMatrix){
-        Log.d("Angle to next point", angleToNextPoint + "");
+//        Log.d("Angle to next point", angleToNextPoint + "");
         mRenderer.mAccumulatedRotationMatrix = rotationMatrix.clone();
     }
 

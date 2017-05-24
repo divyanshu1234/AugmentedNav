@@ -27,7 +27,7 @@ public class Arrow {
 
     private static final int POSITION_COMPONENT_COUNT = 3;
     private static final int COLOR_COMPONENT_COUNT = 3;
-    private static int TRIANGLE_COUNT;
+    private int TRIANGLE_COUNT;
     private static final int BYTES_PER_FLOAT = 4;
     private final FloatBuffer vertexCoordinateData;
     private final FloatBuffer vertexColorData;

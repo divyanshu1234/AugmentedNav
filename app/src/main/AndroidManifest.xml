@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- TODO - Add License text-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ghostvr.augmentednav">
 
@@ -23,16 +25,22 @@
         <meta-data android:name="com.here.android.maps.apptoken" android:value="SnYrdnNu0bvusOfxXVw52Q"/>
 
         <activity android:name=".MapActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+
+        <activity android:name=".NavigationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".NavigationActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
     </application>
 
 </manifest>

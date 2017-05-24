@@ -62,7 +62,10 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         glViewport(0, 0, width, height);
 
-        perspectiveM(projectionMatrix, 0, 45, (float) width / (float) height, 1f, 10f);
+//        perspectiveM(projectionMatrix, 0, 45, (float) width / (float) height, 1f, 10f);
+
+        perspectiveM(projectionMatrix, 0, 45, (float) width / (float) height, 0.5f, 10f);
+
     }
 
     @Override
@@ -75,7 +78,9 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
         setIdentityM(modelMatrix, 0);
 
         setIdentityM(mScaleMatrix, 0);
-        scaleM(mScaleMatrix, 0, 0.2f, 0.2f, 0.2f);
+//        scaleM(mScaleMatrix, 0, 0.2f, 0.2f, 0.2f);
+
+        scaleM(mScaleMatrix, 0, 0.1f, 0.1f, 0.1f);
 
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mScaleMatrix, 0, mTempMatrix, 0);
@@ -86,7 +91,7 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
 
 
         setIdentityM(mTranslationMatrix, 0);
-        translateM(mTranslationMatrix, 0, 0f, eyeTranslation, -5.0f);
+        translateM(mTranslationMatrix, 0, 0f, eyeTranslation, -1.0f);
 
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mTranslationMatrix, 0, mTempMatrix, 0);

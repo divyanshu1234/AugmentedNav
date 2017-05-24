@@ -18,10 +18,10 @@ import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
 /**
- * Created by Divyanshu on 3/8/17.
+ * Created by Divyanshu on 5/24/17.
  */
 
-public class Arrow {
+public class CustomObject {
     private final Context context;
     private int program;
 
@@ -46,60 +46,22 @@ public class Arrow {
             (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT;
 
 
-    public Arrow(Context context){
+    public CustomObject(Context context, float[] tableCoordinateTriangles){
         this.context = context;
 
-        float[] tableCoordinateTriangles = {
-                // Order of coordinates: X, Y, Z
+        float[] tableColorTriangles = new float[tableCoordinateTriangles.length];
 
-                -0.5f,-2f,0.5f,   0.5f,-2f,0.5f,   0.5f,0f,0.5f,
-                 0.5f,0f,0.5f,   -0.5f,0f,0.5f,   -0.5f,-2f,0.5f,
-                 0.5f,0f,0.5f,    1.5f,0f,0.5f,    0f,2f,0.5f,
-                 0.5f,0f,0.5f,    0f,2f,0.5f,     -1.5f,0f,0.5f,
-                -0.5f,0f,-0.5f,  -1.5f,0f,-0.5f,   0f,2f,-0.5f,
-                -0.5f,0f,-0.5f,   0f,2f,-0.5f,     1.5f,0f,-0.5f,
-                -0.5f,0f,-0.5f,   0.5f,0f,-0.5f,   0.5f,-2f,-0.5f,
-                -0.5f,0f,-0.5f,   0.5f,-2f,-0.5f, -0.5f,-2f,-0.5f,
-                 0.5f,-2f,-0.5f,  0.5f,-2f,0.5f,  -0.5f,-2f,0.5f,
-                 0.5f,-2f,-0.5f, -0.5f,-2f,0.5f,  -0.5f,-2f,-0.5f,
-                 0.5f,0f,-0.5f,   0.5f,0f,0.5f,    0.5f,-2f,0.5f,
-                 0.5f,0f,-0.5f,   0.5f,-2f,0.5f,   0.5f,-2f,-0.5f,
-                 1.5f,0f,-0.5f,   1.5f,0f,0.5f,    0.5f,0f,0.5f,
-                 1.5f,0f,-0.5f,   0.5f,0f,0.5f,    0.5f,0f,-0.5f,
-                 0f,2f,-0.5f,     0f,2f,0.5f,      1.5f,0f,0.5f,
-                 0f,2f,-0.5f,     1.5f,0f,0.5f,    1.5f,0f,-0.5f,
-                -1.5f,0f,-0.5f,  -1.5f,0f,0.5f,    0f,2f,0.5f,
-                -1.5f,0f,-0.5f,   0f,2f,0.5f,      0f,2f,-0.5f,
-                -0.5f,0f,-0.5f,  -0.5f,0f,0.5f,   -1.5f,0f,0.5f,
-                -0.5f,0f,-0.5f,  -1.5f,0f,0.5f,   -1.5f,0f,-0.5f,
-                -0.5f,-2f,-0.5f, -0.5f,-2f,0.5f,  -0.5f,0f,0.5f,
-                -0.5f,-2f,-0.5f, -0.5f,0f,0.5f,   -0.5f,0f,-0.5f
-        };
-
-        float[] tableColorTriangles = {
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-        };
+        for (int i = 0, j = 0; i < tableColorTriangles.length / 9; ++i, j += 9){
+            tableColorTriangles[j]   = 1f;
+            tableColorTriangles[j+1] = 0f;
+            tableColorTriangles[j+2] = 0f;
+            tableColorTriangles[j+3] = 0f;
+            tableColorTriangles[j+4] = 1f;
+            tableColorTriangles[j+5] = 0f;
+            tableColorTriangles[j+6] = 0f;
+            tableColorTriangles[j+7] = 0f;
+            tableColorTriangles[j+8] = 1f;
+        }
 
         TRIANGLE_COUNT = tableCoordinateTriangles.length / 9;
 
@@ -153,4 +115,3 @@ public class Arrow {
         glDisableVertexAttribArray(aColorLocation);
     }
 }
-

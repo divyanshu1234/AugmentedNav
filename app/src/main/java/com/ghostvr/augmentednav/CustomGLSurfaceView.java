@@ -20,6 +20,7 @@ public class CustomGLSurfaceView extends GLSurfaceView {
     private Context context;
 
     public static float angleToNextPoint;
+    public static float[] tableCoordinateTriangles;
 
 
     public CustomGLSurfaceView(Context context) {
@@ -46,7 +47,7 @@ public class CustomGLSurfaceView extends GLSurfaceView {
 
         if (supportsES2) {
             setEGLContextClientVersion(2);
-            mRenderer = new CustomRenderer(context);
+            mRenderer = new CustomRenderer(context, tableCoordinateTriangles);
             setRenderer(mRenderer);
             setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             rendererSet = true;

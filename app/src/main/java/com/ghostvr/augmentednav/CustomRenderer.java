@@ -30,7 +30,7 @@ import static android.opengl.Matrix.translateM;
 
 public class CustomRenderer implements GLSurfaceView.Renderer {
     private final Context context;
-    Arrow mArrow;
+    CustomObject customObject;
 
     private static final float[] projectionMatrix = new float[16];
     private final float[] modelMatrix = new float[16];
@@ -38,13 +38,16 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
     private final float[] mScaleMatrix = new float[16];
     private final float[] finalMatrix = new float[16];
 
+    private final float[] tableCoordinateTriangles;
+
     public float[] mAccumulatedRotationMatrix;
     public float eyeTranslation;
 
-    public CustomRenderer(Context context){
+    public CustomRenderer(Context context, float[] tableCoordinateTriangles){
         this.context = context;
         mAccumulatedRotationMatrix = new float[16];
         eyeTranslation = 0.0f;
+        this.tableCoordinateTriangles = tableCoordinateTriangles;
     }
 
     @Override
@@ -55,7 +58,7 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
         glDepthFunc(GL_LEQUAL);
         glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-        mArrow = new Arrow(context);
+        customObject = new CustomObject(context, tableCoordinateTriangles);
     }
 
     @Override
@@ -78,7 +81,6 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
         setIdentityM(modelMatrix, 0);
 
         setIdentityM(mScaleMatrix, 0);
-//        scaleM(mScaleMatrix, 0, 0.2f, 0.2f, 0.2f);
 
         scaleM(mScaleMatrix, 0, 0.1f, 0.1f, 0.1f);
 
@@ -98,7 +100,7 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
 
         multiplyMM(finalMatrix, 0, projectionMatrix, 0, modelMatrix, 0);
 
-        mArrow.draw(finalMatrix);
+        customObject.draw(finalMatrix);
     }
 
 }

@@ -78,9 +78,9 @@ public class NavigationActivity extends AppCompatActivity implements
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        CustomGLSurfaceView.tableCoordinateTriangles = getIntent().getFloatArrayExtra("tableCoordinateTriangles");
 
         setContentView(R.layout.activity_navigation);
-
         glsv_left = (CustomGLSurfaceView) findViewById(R.id.glsv_left);
         glsv_right = (CustomGLSurfaceView) findViewById(R.id.glsv_right);
         glsv_left.setEyeTranslation(-0.032f);

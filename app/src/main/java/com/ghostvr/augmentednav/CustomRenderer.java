@@ -1,6 +1,7 @@
 package com.ghostvr.augmentednav;
 
 import android.content.Context;
+import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -20,6 +21,7 @@ import static android.opengl.GLES20.glHint;
 import static android.opengl.GLES20.glViewport;
 import static android.opengl.Matrix.multiplyMM;
 import static android.opengl.Matrix.perspectiveM;
+import static android.opengl.Matrix.rotateM;
 import static android.opengl.Matrix.scaleM;
 import static android.opengl.Matrix.setIdentityM;
 import static android.opengl.Matrix.translateM;
@@ -82,23 +84,22 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
 
         setIdentityM(mScaleMatrix, 0);
 
-        scaleM(mScaleMatrix, 0, 0.1f, 0.1f, 0.1f);
+        scaleM(mScaleMatrix, 0, 0.075f, 0.075f, 0.075f);
 
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mScaleMatrix, 0, mTempMatrix, 0);
 
-
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mAccumulatedRotationMatrix, 0, mTempMatrix, 0);
 
-
         setIdentityM(mTranslationMatrix, 0);
-        translateM(mTranslationMatrix, 0, 0f, eyeTranslation, -1.0f);
+        translateM(mTranslationMatrix, 0, 0.1f, eyeTranslation, -1.0f);
 
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mTranslationMatrix, 0, mTempMatrix, 0);
 
         multiplyMM(finalMatrix, 0, projectionMatrix, 0, modelMatrix, 0);
+
 
         customObject.draw(finalMatrix);
     }

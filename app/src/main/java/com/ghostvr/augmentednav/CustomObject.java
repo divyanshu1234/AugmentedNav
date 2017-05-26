@@ -1,6 +1,7 @@
 package com.ghostvr.augmentednav;
 
 import android.content.Context;
+import android.opengl.Matrix;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -58,10 +59,13 @@ public class CustomObject {
             tableColorTriangles[j+3] = 0f;
             tableColorTriangles[j+4] = 1f;
             tableColorTriangles[j+5] = 0f;
-            tableColorTriangles[j+6] = 0f;
-            tableColorTriangles[j+7] = 0f;
-            tableColorTriangles[j+8] = 1f;
+            tableColorTriangles[j+6] = 1f;
+            tableColorTriangles[j+7] = 1f;
+            tableColorTriangles[j+8] = 0f;
         }
+
+        float[] rotatedCoordinates = new float[tableCoordinateTriangles.length];
+        rotateObject(rotatedCoordinates, tableCoordinateTriangles, 0, 0.0f, 1, 0, 0);
 
         TRIANGLE_COUNT = tableCoordinateTriangles.length / 9;
 
@@ -69,7 +73,7 @@ public class CustomObject {
                 .allocateDirect(tableCoordinateTriangles.length * BYTES_PER_FLOAT)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
-        vertexCoordinateData.put(tableCoordinateTriangles);
+        vertexCoordinateData.put(rotatedCoordinates);
 
         vertexColorData = ByteBuffer
                 .allocateDirect(tableColorTriangles.length * BYTES_PER_FLOAT)
@@ -90,6 +94,26 @@ public class CustomObject {
         ShaderHelper.validateProgram(program);
         glUseProgram(program);
 
+    }
+
+    private void rotateObject(float[] rotatedCoordinates, float[] tableCoordinateTriangles, int offset, float a, int x, int y, int z) {
+        float[] rotationMatrix = new float[16];
+        Matrix.setRotateM(rotationMatrix, offset, a, x, y, z);
+
+        for (int i = 0; i < tableCoordinateTriangles.length; i += 3){
+            float[] point = new float[4];
+            float[] resultPoint = new float[4];
+
+            point[0] = tableCoordinateTriangles[i];
+            point[1] = tableCoordinateTriangles[i+1];
+            point[2] = tableCoordinateTriangles[i+2];
+            point[3] = 1.0f;
+
+            Matrix.multiplyMV(resultPoint, 0, rotationMatrix, 0, point, 0);
+            rotatedCoordinates[i] = resultPoint[0];
+            rotatedCoordinates[i+1] = resultPoint[1];
+            rotatedCoordinates[i+2] = resultPoint[2];
+        }
     }
 
     public void draw(float[] projectionMatrix){

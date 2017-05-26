@@ -268,9 +268,11 @@ public class NavigationActivity extends AppCompatActivity implements
         }
 
         SensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationReading);
-        SensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
 
-        rotateM(mRotationMatrix, 0, CustomGLSurfaceView.angleToNextPoint, 0f, 0f, 1f);
+        SensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_Z, SensorManager.AXIS_MINUS_Y, mRotationMatrix);
+//        rotateM(mRotationMatrix, 0, 90.0f, 1, 0, 0);
+
+//        rotateM(mRotationMatrix, 0, CustomGLSurfaceView.angleToNextPoint, 0f, 0f, 1f);
         glsv_left.setRotationMatrix(mRotationMatrix);
         glsv_right.setRotationMatrix(mRotationMatrix);
     }

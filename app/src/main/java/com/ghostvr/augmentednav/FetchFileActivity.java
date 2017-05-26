@@ -149,7 +149,7 @@ public class FetchFileActivity extends AppCompatActivity {
         }
 
         for (int i = 0; i < tableCoordinateTriangles.length; ++i)
-            tableCoordinateTriangles[i] = 2 * tableCoordinateTriangles[i] / largestValue;
+            tableCoordinateTriangles[i] = tableCoordinateTriangles[i] / largestValue;
 
         return tableCoordinateTriangles;
     }

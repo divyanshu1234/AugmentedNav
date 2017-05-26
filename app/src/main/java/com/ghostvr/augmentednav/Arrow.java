@@ -76,30 +76,19 @@ public class Arrow {
                 -0.5f,-2f,-0.5f, -0.5f,0f,0.5f,   -0.5f,0f,-0.5f
         };
 
-        float[] tableColorTriangles = {
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-                1f,0f,0f, 0f,1f,0f, 0f,0f,1f,
-        };
+        float[] tableColorTriangles = new float[tableCoordinateTriangles.length];
+
+        for (int i = 0, j = 0; i < tableColorTriangles.length / 9; ++i, j += 9){
+            tableColorTriangles[j]   = 1f;
+            tableColorTriangles[j+1] = 0f;
+            tableColorTriangles[j+2] = 0f;
+            tableColorTriangles[j+3] = 0f;
+            tableColorTriangles[j+4] = 1f;
+            tableColorTriangles[j+5] = 0f;
+            tableColorTriangles[j+6] = 0f;
+            tableColorTriangles[j+7] = 0f;
+            tableColorTriangles[j+8] = 1f;
+        }
 
         TRIANGLE_COUNT = tableCoordinateTriangles.length / 9;
 

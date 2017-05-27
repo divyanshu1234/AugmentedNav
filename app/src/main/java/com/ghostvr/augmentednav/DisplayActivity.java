@@ -66,7 +66,6 @@ public class DisplayActivity extends AppCompatActivity implements
     private final float[] mRotationMatrix = new float[16];
 
     private boolean isVrEnabled;
-    private boolean isObjectCentered;
 
 
     @Override
@@ -77,9 +76,14 @@ public class DisplayActivity extends AppCompatActivity implements
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL;
+        getWindow().setAttributes(params);
+
         CustomGLSurfaceView.tableCoordinateTriangles = getIntent().getFloatArrayExtra("tableCoordinateTriangles");
+        CustomGLSurfaceView.isObjectCentered = getIntent().getBooleanExtra("camera_mode", true);
         isVrEnabled = getIntent().getBooleanExtra("mode", true);
-        isObjectCentered = getIntent().getBooleanExtra("camera_mode", true);
+        CustomGLSurfaceView.isVrEnabled = isVrEnabled;
 
         setContentView(R.layout.activity_navigation);
         glsv_left = (CustomGLSurfaceView) findViewById(R.id.glsv_left);

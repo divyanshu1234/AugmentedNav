@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="File"
+        android:text="No File Selected"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"
@@ -119,12 +119,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="Object Centered" />
+            android:text="Object Centered - SF 2" />
         <RadioButton
             android:id="@+id/rb_camera_centered"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Camera Centered" />
+            android:text="Camera Centered - SF 30" />
     </RadioGroup>
 
 </android.support.constraint.ConstraintLayout>

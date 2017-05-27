@@ -21,6 +21,8 @@ public class CustomGLSurfaceView extends GLSurfaceView {
 
     public static float angleToNextPoint;
     public static float[] tableCoordinateTriangles;
+    public static boolean isObjectCentered;
+    public static boolean isVrEnabled;
 
 
     public CustomGLSurfaceView(Context context) {
@@ -47,7 +49,7 @@ public class CustomGLSurfaceView extends GLSurfaceView {
 
         if (supportsES2) {
             setEGLContextClientVersion(2);
-            mRenderer = new CustomRenderer(context, tableCoordinateTriangles);
+            mRenderer = new CustomRenderer(context, tableCoordinateTriangles, isObjectCentered, isVrEnabled);
             setRenderer(mRenderer);
             setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             rendererSet = true;
@@ -67,7 +69,7 @@ public class CustomGLSurfaceView extends GLSurfaceView {
 
     public void setRotationMatrix(float[] rotationMatrix){
 //        Log.d("Angle to next point", angleToNextPoint + "");
-        mRenderer.mAccumulatedRotationMatrix = rotationMatrix.clone();
+        CustomRenderer.mAccumulatedRotationMatrix = rotationMatrix.clone();
     }
 
     public void setEyeTranslation(float eyeTranslation){

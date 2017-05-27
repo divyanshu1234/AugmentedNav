@@ -92,8 +92,8 @@ public class FetchFileActivity extends AppCompatActivity {
 
                                 Intent intent = new Intent(FetchFileActivity.this, DisplayActivity.class);
                                 intent.putExtra("tableCoordinateTriangles", finalTableCoordinateTriangles);
-                                intent.putExtra("mode", rb_vr_mode.isChecked());
                                 intent.putExtra("camera_mode", rb_object_centered.isChecked());
+                                intent.putExtra("mode", rb_vr_mode.isChecked());
                                 startActivity(intent);
                             }
                         });

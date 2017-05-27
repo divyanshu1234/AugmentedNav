@@ -18,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,7 +28,6 @@ import com.google.android.gms.common.api.GoogleApiClient.*;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static android.opengl.Matrix.rotateM;
@@ -62,12 +60,13 @@ public class DisplayActivity extends AppCompatActivity implements
     Boolean mRequestingLocationUpdates = true;
     Location mCurrentLocation;
 
-
     private SensorManager mSensorManager;
     private Sensor mRotationSensor;
     private final float[] mRotationReading = new float[3];
     private final float[] mRotationMatrix = new float[16];
-    private final float[] mOrientationAngles = new float[3];
+
+    private boolean isVrEnabled;
+    private boolean isObjectCentered;
 
 
     @Override
@@ -79,6 +78,8 @@ public class DisplayActivity extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         CustomGLSurfaceView.tableCoordinateTriangles = getIntent().getFloatArrayExtra("tableCoordinateTriangles");
+        isVrEnabled = getIntent().getBooleanExtra("mode", true);
+        isObjectCentered = getIntent().getBooleanExtra("camera_mode", true);
 
         setContentView(R.layout.activity_navigation);
         glsv_left = (CustomGLSurfaceView) findViewById(R.id.glsv_left);
@@ -269,8 +270,8 @@ public class DisplayActivity extends AppCompatActivity implements
 
         SensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationReading);
 
-        SensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_Z, SensorManager.AXIS_MINUS_Y, mRotationMatrix);
-//        rotateM(mRotationMatrix, 0, 90.0f, 1, 0, 0);
+        if (!isVrEnabled)
+            SensorManager.remapCoordinateSystem(mRotationMatrix, SensorManager.AXIS_Z, SensorManager.AXIS_MINUS_Y, mRotationMatrix);
 
 //        rotateM(mRotationMatrix, 0, CustomGLSurfaceView.angleToNextPoint, 0f, 0f, 1f);
         glsv_left.setRotationMatrix(mRotationMatrix);

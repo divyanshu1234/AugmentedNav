@@ -83,20 +83,19 @@ public class CustomRenderer implements GLSurfaceView.Renderer {
         setIdentityM(modelMatrix, 0);
 
         setIdentityM(mScaleMatrix, 0);
-
         scaleM(mScaleMatrix, 0, 0.075f, 0.075f, 0.075f);
-
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mScaleMatrix, 0, mTempMatrix, 0);
+
+        setIdentityM(mTranslationMatrix, 0);
+//        translateM(mTranslationMatrix, 0, 0.1f, eyeTranslation, -1.0f);
+        translateM(mTranslationMatrix, 0, -4.0f, 0.0f, 0.0f);
+        mTempMatrix = modelMatrix.clone();
+        multiplyMM(modelMatrix, 0, mTranslationMatrix, 0, mTempMatrix, 0);
 
         mTempMatrix = modelMatrix.clone();
         multiplyMM(modelMatrix, 0, mAccumulatedRotationMatrix, 0, mTempMatrix, 0);
 
-        setIdentityM(mTranslationMatrix, 0);
-        translateM(mTranslationMatrix, 0, 0.1f, eyeTranslation, -1.0f);
-
-        mTempMatrix = modelMatrix.clone();
-        multiplyMM(modelMatrix, 0, mTranslationMatrix, 0, mTempMatrix, 0);
 
         multiplyMM(finalMatrix, 0, projectionMatrix, 0, modelMatrix, 0);
 

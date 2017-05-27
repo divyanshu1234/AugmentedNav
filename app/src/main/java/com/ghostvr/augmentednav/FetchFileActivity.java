@@ -1,6 +1,7 @@
 package com.ghostvr.augmentednav;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -8,7 +9,11 @@ import android.provider.OpenableColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -23,6 +28,12 @@ public class FetchFileActivity extends AppCompatActivity {
     Button b_select_file;
     Button b_view_object;
     TextView tv_file_data;
+    EditText et_scaling_factor;
+    RadioButton rb_vr_mode;
+    RadioButton rb_object_centered;
+
+    float[] finalTableCoordinateTriangles;
+
 
     private static final int READ_REQUEST_CODE = 42;
 
@@ -34,6 +45,9 @@ public class FetchFileActivity extends AppCompatActivity {
         b_select_file = (Button) findViewById(R.id.b_select_file);
         b_view_object = (Button) findViewById(R.id.b_view_object);
         tv_file_data = (TextView) findViewById(R.id.tv_file_data);
+        et_scaling_factor = (EditText) findViewById(R.id.et_scaling_factor);
+        rb_vr_mode = (RadioButton) findViewById(R.id.rb_vr_mode);
+        rb_object_centered = (RadioButton) findViewById(R.id.rb_object_centered);
 
         b_select_file.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,8 +58,9 @@ public class FetchFileActivity extends AppCompatActivity {
                 startActivityForResult(intent, READ_REQUEST_CODE);
             }
         });
-    }
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -59,6 +74,7 @@ public class FetchFileActivity extends AppCompatActivity {
 
                     try {
                         tableCoordinateTriangles = getTriangleCoordinates(uri);
+                        tv_file_data.append("\n" + tableCoordinateTriangles.length / 9);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -67,15 +83,17 @@ public class FetchFileActivity extends AppCompatActivity {
                         tv_file_data.setText("Invalid File");
                     }
                     else{
-                        final float[] finalTableCoordinateTriangles = scaleCoordinates(tableCoordinateTriangles);
-
-
+                        final float[]tempCoordinates = tableCoordinateTriangles;
                         b_view_object.setVisibility(View.VISIBLE);
                         b_view_object.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                finalTableCoordinateTriangles = scaleCoordinates(tempCoordinates);
+
                                 Intent intent = new Intent(FetchFileActivity.this, DisplayActivity.class);
                                 intent.putExtra("tableCoordinateTriangles", finalTableCoordinateTriangles);
+                                intent.putExtra("mode", rb_vr_mode.isChecked());
+                                intent.putExtra("camera_mode", rb_object_centered.isChecked());
                                 startActivity(intent);
                             }
                         });
@@ -146,8 +164,14 @@ public class FetchFileActivity extends AppCompatActivity {
             }
         }
 
+        float scalingFactor = 1.0f;
+        try {
+            scalingFactor = Float.parseFloat(et_scaling_factor.getText().toString());
+        } catch (Exception e){
+            scalingFactor = 1.0f;
+        }
         for (int i = 0; i < tableCoordinateTriangles.length; ++i)
-            tableCoordinateTriangles[i] = tableCoordinateTriangles[i] / largestValue;
+            tableCoordinateTriangles[i] = scalingFactor * tableCoordinateTriangles[i] / largestValue;
 
         return tableCoordinateTriangles;
     }

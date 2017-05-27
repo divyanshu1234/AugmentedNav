@@ -108,7 +108,7 @@ public class MapActivity extends AppCompatActivity {
                         b_startNavigation.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(MapActivity.this, NavigationActivity.class);
+                                Intent intent = new Intent(MapActivity.this, DisplayActivity.class);
                                 intent.putExtra("locationList", (Serializable) locationList);
                                 startActivity(intent);
                             }

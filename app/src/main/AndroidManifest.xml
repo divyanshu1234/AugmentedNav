@@ -38,7 +38,7 @@
             <!-- </intent-filter> -->
         </activity>
         <activity
-            android:name=".NavigationActivity"
+            android:name=".DisplayActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <!--<intent-filter>-->

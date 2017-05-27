@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.ghostvr.augmentednav.NavigationActivity">
+    tools:context="com.ghostvr.augmentednav.DisplayActivity">
 
     <LinearLayout
         android:id="@+id/ll_location_data"

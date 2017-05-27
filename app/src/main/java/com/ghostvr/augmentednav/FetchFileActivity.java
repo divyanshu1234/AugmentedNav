@@ -7,13 +7,11 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,7 +74,7 @@ public class FetchFileActivity extends AppCompatActivity {
                         b_view_object.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(FetchFileActivity.this, NavigationActivity.class);
+                                Intent intent = new Intent(FetchFileActivity.this, DisplayActivity.class);
                                 intent.putExtra("tableCoordinateTriangles", finalTableCoordinateTriangles);
                                 startActivity(intent);
                             }

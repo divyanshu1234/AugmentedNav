@@ -38,7 +38,7 @@ import static android.opengl.Matrix.rotateM;
  * Created by Divyanshu on 3/8/17.
  */
 
-public class NavigationActivity extends AppCompatActivity implements
+public class DisplayActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener, SensorEventListener {
 
     private CustomGLSurfaceView glsv_left;

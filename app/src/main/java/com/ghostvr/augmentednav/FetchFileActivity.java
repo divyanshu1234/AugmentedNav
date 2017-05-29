@@ -159,7 +159,7 @@ public class FetchFileActivity extends AppCompatActivity {
         float largestValue = 1.0f;
 
         for (int i = 0; i < tableCoordinateTriangles.length; ++i){
-            if(tableCoordinateTriangles[i] > largestValue){
+            if(Math.abs(tableCoordinateTriangles[i]) > largestValue){
                 largestValue = tableCoordinateTriangles[i];
             }
         }

@@ -155,8 +155,10 @@ public class FetchFileActivity extends AppCompatActivity {
 
         float[] tableCoordinateTriangles = new float[coordinateList.size()];
 
-        for (int i = 0; i < tableCoordinateTriangles.length; ++i)
+        for (int i = 0; i < tableCoordinateTriangles.length; ++i) {
             tableCoordinateTriangles[i] = coordinateList.get(i);
+            Log.d("Points", tableCoordinateTriangles[i] + "");
+        }
 
         return tableCoordinateTriangles;
     }

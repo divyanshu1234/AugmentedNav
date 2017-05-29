@@ -64,17 +64,13 @@ public class CustomObject {
             tableColorTriangles[j+8] = 0f;
         }
 
-        float[] mirroredCoordinates = new float[tableCoordinateTriangles.length];
-        System.arraycopy(tableCoordinateTriangles, 0, mirroredCoordinates, 0, tableCoordinateTriangles.length);
-
         //Mirroring Y - Coordinate
-        if (!isVrEnabled)
-            for (int i = 1; i < tableCoordinateTriangles.length; i += 3)
-                mirroredCoordinates[i] = -mirroredCoordinates[i];
-
 
         float[] rotatedCoordinates = new float[tableCoordinateTriangles.length];
-        rotateObject(mirroredCoordinates, tableCoordinateTriangles, 0, 0.0f, 1, 0, 0);
+        if(!isVrEnabled)
+            rotateObject(rotatedCoordinates, tableCoordinateTriangles, 0, 180.0f, 1, 0, 0);
+        else
+            rotateObject(rotatedCoordinates, tableCoordinateTriangles, 0, 0.0f, 1, 0, 0);
 
         TRIANGLE_COUNT = tableCoordinateTriangles.length / 9;
 

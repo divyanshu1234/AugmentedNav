@@ -151,13 +151,12 @@ public class FetchFileActivity extends AppCompatActivity {
             inputStream.skip(2);
         }
 
+        inputStream.close();
+
         float[] tableCoordinateTriangles = new float[coordinateList.size()];
 
-        for (int i = 0; i < tableCoordinateTriangles.length; ++i){
+        for (int i = 0; i < tableCoordinateTriangles.length; ++i)
             tableCoordinateTriangles[i] = coordinateList.get(i);
-            Log.d("Point", tableCoordinateTriangles[i] + "");
-
-        }
 
         return tableCoordinateTriangles;
     }
@@ -172,7 +171,7 @@ public class FetchFileActivity extends AppCompatActivity {
         float largestValue = 1.0f;
 
         for (int i = 0; i < tableCoordinateTriangles.length; ++i){
-            if(tableCoordinateTriangles[i] > largestValue){
+            if(Math.abs(tableCoordinateTriangles[i]) > largestValue){
                 largestValue = tableCoordinateTriangles[i];
             }
         }

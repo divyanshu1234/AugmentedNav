@@ -47,7 +47,7 @@ public class CustomObject {
             (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT;
 
 
-    public CustomObject(Context context, float[] tableCoordinateTriangles){
+    public CustomObject(Context context, float[] tableCoordinateTriangles, boolean isVrEnabled){
         this.context = context;
 
         float[] tableColorTriangles = new float[tableCoordinateTriangles.length];
@@ -64,8 +64,17 @@ public class CustomObject {
             tableColorTriangles[j+8] = 0f;
         }
 
+        float[] mirroredCoordinates = new float[tableCoordinateTriangles.length];
+        System.arraycopy(tableCoordinateTriangles, 0, mirroredCoordinates, 0, tableCoordinateTriangles.length);
+
+        //Mirroring Y - Coordinate
+        if (!isVrEnabled)
+            for (int i = 1; i < tableCoordinateTriangles.length; i += 3)
+                mirroredCoordinates[i] = -mirroredCoordinates[i];
+
+
         float[] rotatedCoordinates = new float[tableCoordinateTriangles.length];
-        rotateObject(rotatedCoordinates, tableCoordinateTriangles, 0, 0.0f, 1, 0, 0);
+        rotateObject(mirroredCoordinates, tableCoordinateTriangles, 0, 0.0f, 1, 0, 0);
 
         TRIANGLE_COUNT = tableCoordinateTriangles.length / 9;
 
@@ -93,7 +102,6 @@ public class CustomObject {
         program = ShaderHelper.linkProgram(vertexShader, fragmentShader);
         ShaderHelper.validateProgram(program);
         glUseProgram(program);
-
     }
 
     private void rotateObject(float[] rotatedCoordinates, float[] tableCoordinateTriangles, int offset, float a, int x, int y, int z) {

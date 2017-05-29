@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -106,6 +107,7 @@ public class FetchFileActivity extends AppCompatActivity {
         }
     }
 
+
     private String showMetaData(Uri uri) {
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         String fileName = "";
@@ -127,33 +129,44 @@ public class FetchFileActivity extends AppCompatActivity {
         return fileName.substring(fileName.lastIndexOf("."));
     }
 
+
     private float[] getTriangleCoordinates(Uri uri) throws IOException {
         List<Float> coordinateList = new ArrayList<>();
+        byte[] buffer = new byte[4];
 
         InputStream inputStream = getContentResolver().openInputStream(uri);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
 
-        while ((line = reader.readLine()) != null){
-            String[] words = (line).trim().split(" ");
+        inputStream.skip(80);
+        inputStream.read(buffer);
+        int size = getIntWithLittleEndian(buffer, 0);
 
-            if(words.length != 0){
-                if(words[0].equals("vertex")){
-                    coordinateList.add(Float.parseFloat(words[1]));
-                    coordinateList.add(Float.parseFloat(words[2]));
-                    coordinateList.add(Float.parseFloat(words[3]));
-                }
+        for (int i = 0; i < size; ++i){
+            inputStream.skip(12);
 
+            for (int j = 0; j < 9; ++j){
+                inputStream.read(buffer);
+                float point = Float.intBitsToFloat(getIntWithLittleEndian(buffer, 0));
+                coordinateList.add(point);
             }
+            inputStream.skip(2);
         }
 
         float[] tableCoordinateTriangles = new float[coordinateList.size()];
 
-        for (int i = 0; i < tableCoordinateTriangles.length; ++i)
+        for (int i = 0; i < tableCoordinateTriangles.length; ++i){
             tableCoordinateTriangles[i] = coordinateList.get(i);
+            Log.d("Point", tableCoordinateTriangles[i] + "");
+
+        }
 
         return tableCoordinateTriangles;
     }
+
+
+    private int getIntWithLittleEndian(byte[] buffer, int offset) {
+        return (0xff & buffer[offset]) | ((0xff & buffer[offset + 1]) << 8) | ((0xff & buffer[offset + 2]) << 16) | ((0xff & buffer[offset + 3]) << 24);
+    }
+
 
     private float[] scaleCoordinates(float[] tableCoordinateTriangles) {
         float largestValue = 1.0f;

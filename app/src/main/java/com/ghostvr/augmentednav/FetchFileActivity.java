@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.OpenableColumns;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,8 +37,7 @@ public class FetchFileActivity extends AppCompatActivity {
     RadioButton rb_object_centered;
     ProgressBar pb_progress;
 
-    float[] finalTableCoordinateTriangles;
-
+    ExtractCoordinatesTask extractCoordinatesTask;
 
     private static final int READ_REQUEST_CODE = 42;
 
@@ -75,8 +75,10 @@ public class FetchFileActivity extends AppCompatActivity {
             if(data != null){
                 uri = data.getData();
                 String extension = showMetaData(uri);
-                if (extension.equals(".stl"))
-                    new ExtractCoordinatesTask().execute(uri);
+                if (extension.equals(".stl")) {
+                    extractCoordinatesTask = new ExtractCoordinatesTask();
+                    extractCoordinatesTask.execute(uri);
+                }
                 else
                     tv_file_data.setText("Invalid File");
             }
@@ -104,6 +106,12 @@ public class FetchFileActivity extends AppCompatActivity {
         return fileName.substring(fileName.lastIndexOf("."));
     }
 
+
+    @Override
+    protected void onDestroy() {
+        extractCoordinatesTask.cancel(true);
+        super.onDestroy();
+    }
 
     class ExtractCoordinatesTask extends AsyncTask<Uri, Integer, Void>{
 
@@ -155,7 +163,6 @@ public class FetchFileActivity extends AppCompatActivity {
             } else{
                 tv_file_data.setText("Invalid File");
             }
-
         }
 
 
@@ -167,29 +174,26 @@ public class FetchFileActivity extends AppCompatActivity {
 
             inputStream.skip(80);
             inputStream.read(buffer);
-            int size = getIntWithLittleEndian(buffer, 0);
+            int numTriangles = getIntWithLittleEndian(buffer, 0);
 
-            for (int i = 0; i < size; ++i){
+            for (int i = 0; i < numTriangles && !isCancelled(); ++i){
                 inputStream.skip(12);
 
                 for (int j = 0; j < 9; ++j){
                     inputStream.read(buffer);
-                    float point = Float.intBitsToFloat(getIntWithLittleEndian(buffer, 0));
-                    coordinateList.add(point);
+                    coordinateList.add(Float.intBitsToFloat(getIntWithLittleEndian(buffer, 0)));
                 }
                 inputStream.skip(2);
 
-                publishProgress((int)(100.0f * i / size));
+                publishProgress((int)(100.0f * i / numTriangles));
             }
 
             inputStream.close();
 
             float[] tableCoordinateTriangles = new float[coordinateList.size()];
 
-            for (int i = 0; i < tableCoordinateTriangles.length; ++i) {
+            for (int i = 0; i < tableCoordinateTriangles.length; ++i)
                 tableCoordinateTriangles[i] = coordinateList.get(i);
-                Log.d("Points", tableCoordinateTriangles[i] + "");
-            }
 
             return tableCoordinateTriangles;
         }
@@ -210,11 +214,13 @@ public class FetchFileActivity extends AppCompatActivity {
             }
 
             float scalingFactor = 1.0f;
+
             try {
                 scalingFactor = Float.parseFloat(et_scaling_factor.getText().toString());
             } catch (Exception e){
                 scalingFactor = 1.0f;
             }
+
             for (int i = 0; i < tableCoordinateTriangles.length; ++i)
                 tableCoordinateTriangles[i] = scalingFactor * tableCoordinateTriangles[i] / largestValue;
 

@@ -69,7 +69,7 @@ public class CustomObject {
 
         //Mirroring Y - Coordinate
         if (!isVrEnabled)
-            for (int i = 1; i < tableCoordinateTriangles.length; i += 3)
+            for (int i = 0; i < tableCoordinateTriangles.length; i += 3)
                 mirroredCoordinates[i] = -mirroredCoordinates[i];
 
 

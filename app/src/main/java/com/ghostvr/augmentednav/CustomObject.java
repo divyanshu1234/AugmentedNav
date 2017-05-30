@@ -74,7 +74,7 @@ public class CustomObject {
 
 
         float[] rotatedCoordinates = new float[tableCoordinateTriangles.length];
-        rotateObject(mirroredCoordinates, tableCoordinateTriangles, 0, 0.0f, 1, 0, 0);
+        rotateObject(rotatedCoordinates, mirroredCoordinates, 0, 0.0f, 1, 0, 0);
 
         TRIANGLE_COUNT = tableCoordinateTriangles.length / 9;
 

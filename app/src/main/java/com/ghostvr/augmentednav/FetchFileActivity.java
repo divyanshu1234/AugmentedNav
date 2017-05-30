@@ -129,23 +129,26 @@ public class FetchFileActivity extends AppCompatActivity {
 
     private float[] getTriangleCoordinates(Uri uri) throws IOException {
         List<Float> coordinateList = new ArrayList<>();
+        byte[] buffer = new byte[4];
 
         InputStream inputStream = getContentResolver().openInputStream(uri);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
 
-        while ((line = reader.readLine()) != null){
-            String[] words = (line).trim().split(" ");
+        inputStream.skip(80);
+        inputStream.read(buffer);
+        int size = getIntWithLittleEndian(buffer, 0);
 
-            if(words.length != 0){
-                if(words[0].equals("vertex")){
-                    coordinateList.add(Float.parseFloat(words[1]));
-                    coordinateList.add(Float.parseFloat(words[2]));
-                    coordinateList.add(Float.parseFloat(words[3]));
-                }
+        for (int i = 0; i < size; ++i){
+            inputStream.skip(12);
 
+            for (int j = 0; j < 9; ++j){
+                inputStream.read(buffer);
+                float point = Float.intBitsToFloat(getIntWithLittleEndian(buffer, 0));
+                coordinateList.add(point);
             }
+            inputStream.skip(2);
         }
+
+        inputStream.close();
 
         float[] tableCoordinateTriangles = new float[coordinateList.size()];
 
@@ -153,6 +156,10 @@ public class FetchFileActivity extends AppCompatActivity {
             tableCoordinateTriangles[i] = coordinateList.get(i);
 
         return tableCoordinateTriangles;
+    }
+
+    private int getIntWithLittleEndian(byte[] buffer, int offset) {
+        return (0xff & buffer[offset]) | ((0xff & buffer[offset + 1]) << 8) | ((0xff & buffer[offset + 2]) << 16) | ((0xff & buffer[offset + 3]) << 24);
     }
 
     private float[] scaleCoordinates(float[] tableCoordinateTriangles) {
